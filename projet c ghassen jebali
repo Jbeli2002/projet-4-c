@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char nomvoy[40];
+    char prenomvoy[40];
+    char adressevoy[80];
+} Voyageur;
+
+typedef struct {
+    int numbus;
+    char destination[40];
+    int capacite;
+    int places_disponibles;
+} Bus;
+
+typedef struct {
+    int numero_reservation;
+    int numero_bus;
+    Voyageur voyageur;
+} Reservation;
+
+Voyageur creerVoyageur() {
+    Voyageur nouveauVoyageur;
+    printf("Entrez le nom du voyageur : ");
+    scanf("%s", nouveauVoyageur.nomvoy);
+    printf("Entrez le prénom du voyageur : ");
+    scanf("%s", nouveauVoyageur.prenomvoy);
+    printf("Entrez l'adresse du voyageur : ");
+    scanf("%s", nouveauVoyageur.adressevoy);
+    return nouveauVoyageur;
+}
+
+Reservation creerReservation(int numero_reservation, int numero_bus) {
+    Reservation nouvelleReservation;
+    nouvelleReservation.numero_reservation = numero_reservation;
+    nouvelleReservation.numero_bus = numero_bus;
+    nouvelleReservation.voyageur = creerVoyageur();
+    return nouvelleReservation;
+}
+
+void afficherDetailsBus(Bus bus) {
+    printf("Bus #%d\n", bus.numbus);
+    printf("Destination : %s\n", bus.destination);
+    printf("Capacité : %d\n", bus.capacite);
+    printf("Places disponibles : %d\n", bus.places_disponibles);
+}
+
+void afficherModifierDetailsReservation(Reservation *reservation) {
+    printf("Numéro de réservation : %d\n", reservation->numero_reservation);
+    printf("Numéro de bus : %d\n", reservation->numero_bus);
+    printf("Voyageur :\n");
+    printf("Nom : %s\n", reservation->voyageur.nomvoy);
+    printf("Prénom : %s\n", reservation->voyageur.prenomvoy);
+    printf("Adresse : %s\n", reservation->voyageur.adressevoy);
+
+    printf("Voulez-vous modifier cette réservation ? (1 pour Oui, 0 pour Non) : ");
+    int choix;
+    scanf("%d", &choix);
+    if (choix == 1) {
+        reservation->voyageur = creerVoyageur();
+        printf("Modification effectuée avec succès.\n");
+    }
+}
+
+void afficherToutesReservations(Reservation reservations[], int nombreReservations) {
+    printf("Liste de toutes les réservations :\n");
+    for (int i = 0; i < nombreReservations; i++) {
+        printf("Réservation #%d\n", reservations[i].numero_reservation);
+        printf("Numéro de bus : %d\n", reservations[i].numero_bus);
+        printf("Voyageur :\n");
+        printf("Nom : %s\n", reservations[i].voyageur.nomvoy);
+        printf("Prénom : %s\n", reservations[i].voyageur.prenomvoy);
+        printf("Adresse : %s\n", reservations[i].voyageur.adressevoy);
+        printf("------------------------\n");
+    }
+}
+
+int main() {
+    const int MAX_RESERVATIONS = 100;
+    Reservation reservations[MAX_RESERVATIONS];
+    int nombreReservations = 0;
+
+    Bus bus1 = {1, "Paris", 50, 50};
+    Bus bus2 = {2, "Lyon", 40, 40};
+
+    reservations[nombreReservations++] = creerReservation(1, 1);
+    reservations[nombreReservations++] = creerReservation(2, 2);
+
+    int choix;
+    do {
+        printf("\nMenu Principal:\n");
+        printf("1. Afficher les détails des bus\n");
+        printf("2. Afficher toutes les réservations\n");
+        printf("3. Afficher et modifier les détails d'une réservation\n");
+        printf("0. Quitter\n");
+        printf("Entrez votre choix : ");
+        scanf("%d", &choix);
+
+        switch (choix) {
+            case 1:
+                afficherDetailsBus(bus1);
+                afficherDetailsBus(bus2);
+                break;
+            case 2:
+                afficherToutesReservations(reservations, nombreReservations);
+                break;
+            case 3:
+                printf("Entrez le numéro de réservation : ");
+                int numeroReservation;
+                scanf("%d", &numeroReservation);
+                for (int i = 0; i < nombreReservations; i++) {
+                    if (reservations[i].numero_reservation == numeroReservation) {
+                        afficherModifierDetailsReservation(&reservations[i]);
+                        break;
+                    }
+                }
+                break;
+            case 0:
+                printf("Au revoir !\n");
+                break;
+            default:
+                printf("Choix non valide. Veuillez réessayer.\n");
+        }
+    } while (choix != 0);
+
+    return 0;
+}
